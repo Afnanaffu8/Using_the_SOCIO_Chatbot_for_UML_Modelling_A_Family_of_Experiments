@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile - UML Experiment Platform{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="fas fa-user-circle me-2"></i>My Profile</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-control" value="{{ user.username }}" disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" value="{{ user.email }}" disabled>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="age" class="form-label">Age</label>
+                            <input type="number" class="form-control" id="age" name="age" value="{{ user.age|default:'' }}" min="18" max="100">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="education_level" class="form-label">Education Level</label>
+                            <select class="form-select" id="education_level" name="education_level">
+                                <option value="">Select...</option>
+                                <option value="Bachelor's" {% if user.education_level == "Bachelor's" %}selected{% endif %}>Bachelor's Degree</option>
+                                <option value="Master's" {% if user.education_level == "Master's" %}selected{% endif %}>Master's Degree</option>
+                                <option value="PhD" {% if user.education_level == "PhD" %}selected{% endif %}>PhD</option>
+                                <option value="Other" {% if user.education_level == "Other" %}selected{% endif %}>Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="uml_experience" class="form-label">UML Experience</label>
+                        <select class="form-select" id="uml_experience" name="uml_experience">
+                            <option value="">Select...</option>
+                            <option value="Beginner" {% if user.uml_experience == "Beginner" %}selected{% endif %}>Beginner (0-1 year)</option>
+                            <option value="Intermediate" {% if user.uml_experience == "Intermediate" %}selected{% endif %}>Intermediate (1-3 years)</option>
+                            <option value="Advanced" {% if user.uml_experience == "Advanced" %}selected{% endif %}>Advanced (3+ years)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Update Profile
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

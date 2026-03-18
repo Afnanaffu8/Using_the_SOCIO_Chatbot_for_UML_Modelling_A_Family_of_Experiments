@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Task{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="fas fa-edit me-2"></i>Edit Task: {{ task.title }}</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Task Title *</label>
+                        <input type="text" class="form-control" id="title" name="title" 
+                               value="{{ task.title }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description *</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" required>{{ task.description }}</textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="requirements" class="form-label">Requirements *</label>
+                        <textarea class="form-control" id="requirements" name="requirements" rows="6" required>{{ task.requirements }}</textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="tool_type" class="form-label">Tool Type *</label>
+                            <select class="form-select" id="tool_type" name="tool_type" required>
+                                <option value="chatbot" {% if task.tool_type == 'chatbot' %}selected{% endif %}>Chatbot</option>
+                                <option value="graphical" {% if task.tool_type == 'graphical' %}selected{% endif %}>Graphical Tool</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="difficulty" class="form-label">Difficulty *</label>
+                            <select class="form-select" id="difficulty" name="difficulty" required>
+                                <option value="easy" {% if task.difficulty == 'easy' %}selected{% endif %}>Easy</option>
+                                <option value="medium" {% if task.difficulty == 'medium' %}selected{% endif %}>Medium</option>
+                                <option value="hard" {% if task.difficulty == 'hard' %}selected{% endif %}>Hard</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="time_limit" class="form-label">Time Limit (minutes) *</label>
+                            <input type="number" class="form-control" id="time_limit" name="time_limit" 
+                                   value="{{ task.time_limit }}" min="10" max="120" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="expected_classes" class="form-label">Expected Number of Classes *</label>
+                            <input type="number" class="form-control" id="expected_classes" name="expected_classes" 
+                                   value="{{ task.expected_classes }}" min="1" max="20" required>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="expected_relationships" class="form-label">Expected Number of Relationships *</label>
+                            <input type="number" class="form-control" id="expected_relationships" name="expected_relationships" 
+                                   value="{{ task.expected_relationships }}" min="1" max="30" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="is_active" name="is_active" 
+                                   {% if task.is_active %}checked{% endif %}>
+                            <label class="form-check-label" for="is_active">Active (available for assignment)</label>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'adminpanel:task_list' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Update Task
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

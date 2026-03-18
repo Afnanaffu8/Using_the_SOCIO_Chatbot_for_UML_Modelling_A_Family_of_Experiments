@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}Assignment Management{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="fas fa-clipboard-check me-2"></i>Assignment Management</h2>
+        <p class="text-muted">Assign tasks to participants</p>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-plus me-2"></i>Create New Assignments</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Select Task *</strong></label>
+                        <select class="form-select" name="task" required>
+                            <option value="">Choose a task...</option>
+                            {% for task in tasks %}
+                            <option value="{{ task.id }}">
+                                {{ task.title }} ({{ task.get_tool_type_display }} - {{ task.get_difficulty_display }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Select Participants *</strong></label>
+                        <div class="border rounded p-3" style="max-height: 300px; overflow-y: auto;">
+                            {% for participant in participants %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="participants" 
+                                       value="{{ participant.id }}" id="participant{{ participant.id }}">
+                                <label class="form-check-label" for="participant{{ participant.id }}">
+                                    {{ participant.username }} ({{ participant.email }})
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="form-text">Select one or more participants to assign this task</div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check me-2"></i>Create Assignments
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-list me-2"></i>Recent Assignments</h5>
+            </div>
+            <div class="card-body">
+                {% if assignments %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Participant</th>
+                                <th>Task</th>
+                                <th>Tool Type</th>
+                                <th>Assigned Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for assignment in assignments %}
+                            <tr>
+                                <td>{{ assignment.user.username }}</td>
+                                <td><strong>{{ assignment.task.title }}</strong></td>
+                                <td>
+                                    {% if assignment.task.tool_type == 'chatbot' %}
+                                    <span class="badge bg-info">Chatbot</span>
+                                    {% else %}
+                                    <span class="badge bg-success">Graphical</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ assignment.assigned_at|date:"M d, Y H:i" }}</td>
+                                <td>
+                                    {% if assignment.status == 'completed' %}
+                                    <span class="badge bg-success">Completed</span>
+                                    {% elif assignment.status == 'in_progress' %}
+                                    <span class="badge bg-warning">In Progress</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">Pending</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No assignments created yet</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

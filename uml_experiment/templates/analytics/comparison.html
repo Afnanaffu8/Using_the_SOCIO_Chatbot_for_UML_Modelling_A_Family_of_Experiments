@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %}Tool Comparison{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="fas fa-balance-scale me-2"></i>Statistical Tool Comparison</h2>
+        <p class="text-muted">Independent t-test results comparing chatbot vs graphical tool</p>
+    </div>
+</div>
+
+{% if statistical_results %}
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Completion Time</h5>
+            </div>
+            <div class="card-body">
+                {% if statistical_results.time_comparison %}
+                <p><strong>t-statistic:</strong> {{ statistical_results.time_comparison.t_statistic|floatformat:3 }}</p>
+                <p><strong>p-value:</strong> {{ statistical_results.time_comparison.p_value|floatformat:4 }}</p>
+                <p class="mb-0">
+                    <strong>Result:</strong>
+                    {% if statistical_results.time_comparison.significant %}
+                    <span class="badge bg-success">Statistically Significant (p &lt; 0.05)</span>
+                    {% else %}
+                    <span class="badge bg-secondary">Not Significant (p ≥ 0.05)</span>
+                    {% endif %}
+                </p>
+                {% else %}
+                <p class="text-muted">Insufficient data for comparison</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Diagram Quality</h5>
+            </div>
+            <div class="card-body">
+                {% if statistical_results.quality_comparison %}
+                <p><strong>t-statistic:</strong> {{ statistical_results.quality_comparison.t_statistic|floatformat:3 }}</p>
+                <p><strong>p-value:</strong> {{ statistical_results.quality_comparison.p_value|floatformat:4 }}</p>
+                <p class="mb-0">
+                    <strong>Result:</strong>
+                    {% if statistical_results.quality_comparison.significant %}
+                    <span class="badge bg-success">Statistically Significant (p &lt; 0.05)</span>
+                    {% else %}
+                    <span class="badge bg-secondary">Not Significant (p ≥ 0.05)</span>
+                    {% endif %}
+                </p>
+                {% else %}
+                <p class="text-muted">Insufficient data for comparison</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">User Satisfaction</h5>
+            </div>
+            <div class="card-body">
+                {% if statistical_results.satisfaction_comparison %}
+                <p><strong>t-statistic:</strong> {{ statistical_results.satisfaction_comparison.t_statistic|floatformat:3 }}</p>
+                <p><strong>p-value:</strong> {{ statistical_results.satisfaction_comparison.p_value|floatformat:4 }}</p>
+                <p class="mb-0">
+                    <strong>Result:</strong>
+                    {% if statistical_results.satisfaction_comparison.significant %}
+                    <span class="badge bg-success">Statistically Significant (p &lt; 0.05)</span>
+                    {% else %}
+                    <span class="badge bg-secondary">Not Significant (p ≥ 0.05)</span>
+                    {% endif %}
+                </p>
+                {% else %}
+                <p class="text-muted">Insufficient data for comparison</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-warning">
+    <i class="fas fa-exclamation-triangle me-2"></i>
+    No statistical data available yet. Complete more experiments to see comparisons.
+</div>
+{% endif %}
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Chatbot Tool - Completion Times</h5>
+            </div>
+            <div class="card-body">
+                {% if chatbot_times %}
+                <p><strong>Sample Size:</strong> {{ chatbot_times|length }}</p>
+                <ul>
+                    {% for t in chatbot_times %}
+                    <li>{{ t }} seconds</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-muted">No data available</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Graphical Tool - Completion Times</h5>
+            </div>
+            <div class="card-body">
+                {% if graphical_times %}
+                <p><strong>Sample Size:</strong> {{ graphical_times|length }}</p>
+                <ul>
+                    {% for t in graphical_times %}
+                    <li>{{ t }} seconds</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-muted">No data available</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

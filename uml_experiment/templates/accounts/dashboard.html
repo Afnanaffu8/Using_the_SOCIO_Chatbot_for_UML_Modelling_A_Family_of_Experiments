@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - UML Experiment Platform{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-6 fw-bold">
+                <i class="fas fa-tachometer-alt me-2"></i>Participant Dashboard
+            </h1>
+            <p class="text-muted">Welcome back, {{ user.username }}!</p>
+        </div>
+    </div>
+    
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <div class="stat-number">{{ total_tasks }}</div>
+                <div class="stat-label"><i class="fas fa-tasks me-2"></i>Total Tasks</div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="stat-card success">
+                <div class="stat-number">{{ completed }}</div>
+                <div class="stat-label"><i class="fas fa-check-circle me-2"></i>Completed</div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="stat-card warning">
+                <div class="stat-number">{{ in_progress }}</div>
+                <div class="stat-label"><i class="fas fa-spinner me-2"></i>In Progress</div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="stat-card info">
+                <div class="stat-number">{{ pending }}</div>
+                <div class="stat-label"><i class="fas fa-clock me-2"></i>Pending</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Tasks -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-clipboard-list me-2"></i>Recent Tasks</h5>
+                    <a href="{% url 'tasks:my_tasks' %}" class="btn btn-sm btn-primary">
+                        View All <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if assignments %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Task</th>
+                                    <th>Tool Type</th>
+                                    <th>Difficulty</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for assignment in assignments %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ assignment.task.title }}</strong>
+                                    </td>
+                                    <td>
+                                        {% if assignment.task.tool_type == 'chatbot' %}
+                                        <span class="badge bg-info">
+                                            <i class="fas fa-robot me-1"></i>Chatbot
+                                        </span>
+                                        {% else %}
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-draw-polygon me-1"></i>Graphical
+                                        </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if assignment.task.difficulty == 'easy' %}
+                                        <span class="badge bg-success">Easy</span>
+                                        {% elif assignment.task.difficulty == 'medium' %}
+                                        <span class="badge bg-warning">Medium</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">Hard</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if assignment.status == 'completed' %}
+                                        <span class="badge bg-success">Completed</span>
+                                        {% elif assignment.status == 'in_progress' %}
+                                        <span class="badge bg-warning">In Progress</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">Pending</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if assignment.status != 'completed' %}
+                                        <a href="{% url 'tasks:task_detail' assignment.task.pk %}" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-play me-1"></i>Start
+                                        </a>
+                                        {% else %}
+                                        <a href="{% url 'submissions:detail' assignment.submission.pk %}" class="btn btn-sm btn-success">
+                                            <i class="fas fa-eye me-1"></i>View
+                                        </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No tasks assigned yet.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}My Submissions{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="fas fa-file-upload me-2"></i>My Submissions</h2>
+        <p class="text-muted">View all your completed tasks and submissions</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        {% if submissions %}
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Task</th>
+                                <th>Tool Type</th>
+                                <th>Submitted</th>
+                                <th>Time Taken</th>
+                                <th>Score</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for submission in submissions %}
+                            <tr>
+                                <td><strong>{{ submission.assignment.task.title }}</strong></td>
+                                <td>
+                                    {% if submission.assignment.task.tool_type == 'chatbot' %}
+                                    <span class="badge bg-info">
+                                        <i class="fas fa-robot me-1"></i>Chatbot
+                                    </span>
+                                    {% else %}
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-draw-polygon me-1"></i>Graphical
+                                    </span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ submission.submitted_at|date:"M d, Y H:i" }}</td>
+                                <td>
+                                    {% if submission.assignment.time_taken %}
+                                        {{ submission.assignment.time_taken|floatformat:0 }}s
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if submission.completeness_score %}
+                                        <span class="badge bg-primary">{{ submission.completeness_score|floatformat:1 }}%</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Pending</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if submission.evaluated_at %}
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check me-1"></i>Evaluated
+                                    </span>
+                                    {% else %}
+                                    <span class="badge bg-warning">
+                                        <i class="fas fa-clock me-1"></i>Pending Review
+                                    </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{% url 'submissions:detail' submission.pk %}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-eye me-1"></i>View
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+                <h4>No Submissions Yet</h4>
+                <p class="text-muted">Complete your assigned tasks to see submissions here</p>
+                <a href="{% url 'tasks:my_tasks' %}" class="btn btn-primary">
+                    <i class="fas fa-tasks me-2"></i>View My Tasks
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

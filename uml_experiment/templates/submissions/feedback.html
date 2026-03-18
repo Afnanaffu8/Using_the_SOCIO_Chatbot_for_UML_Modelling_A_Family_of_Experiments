@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}Submit Feedback{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0"><i class="fas fa-comments me-2"></i>Your Feedback</h4>
+            </div>
+            <div class="card-body">
+                <p class="lead">Thank you for completing the task! Please share your experience with the tool.</p>
+                
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <label class="form-label"><strong>1. Ease of Use</strong></label>
+                        <p class="text-muted small">How easy was it to use this tool?</p>
+                        <div class="btn-group w-100" role="group">
+                            <input type="radio" class="btn-check" name="ease_of_use" id="ease1" value="1" required>
+                            <label class="btn btn-outline-danger" for="ease1">1 - Very Difficult</label>
+                            
+                            <input type="radio" class="btn-check" name="ease_of_use" id="ease2" value="2">
+                            <label class="btn btn-outline-warning" for="ease2">2</label>
+                            
+                            <input type="radio" class="btn-check" name="ease_of_use" id="ease3" value="3">
+                            <label class="btn btn-outline-info" for="ease3">3 - Neutral</label>
+                            
+                            <input type="radio" class="btn-check" name="ease_of_use" id="ease4" value="4">
+                            <label class="btn btn-outline-primary" for="ease4">4</label>
+                            
+                            <input type="radio" class="btn-check" name="ease_of_use" id="ease5" value="5">
+                            <label class="btn btn-outline-success" for="ease5">5 - Very Easy</label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label"><strong>2. Satisfaction</strong></label>
+                        <p class="text-muted small">How satisfied are you with the tool?</p>
+                        <div class="btn-group w-100" role="group">
+                            <input type="radio" class="btn-check" name="satisfaction" id="sat1" value="1" required>
+                            <label class="btn btn-outline-danger" for="sat1">1 - Very Unsatisfied</label>
+                            
+                            <input type="radio" class="btn-check" name="satisfaction" id="sat2" value="2">
+                            <label class="btn btn-outline-warning" for="sat2">2</label>
+                            
+                            <input type="radio" class="btn-check" name="satisfaction" id="sat3" value="3">
+                            <label class="btn btn-outline-info" for="sat3">3 - Neutral</label>
+                            
+                            <input type="radio" class="btn-check" name="satisfaction" id="sat4" value="4">
+                            <label class="btn btn-outline-primary" for="sat4">4</label>
+                            
+                            <input type="radio" class="btn-check" name="satisfaction" id="sat5" value="5">
+                            <label class="btn btn-outline-success" for="sat5">5 - Very Satisfied</label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label"><strong>3. Efficiency</strong></label>
+                        <p class="text-muted small">How efficient was the tool in helping you create the diagram?</p>
+                        <div class="btn-group w-100" role="group">
+                            <input type="radio" class="btn-check" name="efficiency" id="eff1" value="1" required>
+                            <label class="btn btn-outline-danger" for="eff1">1 - Very Inefficient</label>
+                            
+                            <input type="radio" class="btn-check" name="efficiency" id="eff2" value="2">
+                            <label class="btn btn-outline-warning" for="eff2">2</label>
+                            
+                            <input type="radio" class="btn-check" name="efficiency" id="eff3" value="3">
+                            <label class="btn btn-outline-info" for="eff3">3 - Neutral</label>
+                            
+                            <input type="radio" class="btn-check" name="efficiency" id="eff4" value="4">
+                            <label class="btn btn-outline-primary" for="eff4">4</label>
+                            
+                            <input type="radio" class="btn-check" name="efficiency" id="eff5" value="5">
+                            <label class="btn btn-outline-success" for="eff5">5 - Very Efficient</label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label"><strong>4. Would you recommend this tool?</strong></label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="would_recommend" id="recYes" value="yes" required>
+                            <label class="form-check-label" for="recYes">Yes</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="would_recommend" id="recNo" value="no">
+                            <label class="form-check-label" for="recNo">No</label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label"><strong>5. Additional Comments (Optional)</strong></label>
+                        <textarea class="form-control" name="comments" rows="4" 
+                                  placeholder="Share any additional thoughts or suggestions..."></textarea>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-paper-plane me-2"></i>Submit Feedback
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

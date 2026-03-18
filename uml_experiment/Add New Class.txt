@@ -1,0 +1,15 @@
+Class Name* :Customer
+
+Attributes (one per line):
+- customerId: int
+- name: String
+- email: String
+- phoneNumber: String
+- address: String
+
+Methods (one per line):
++ register(): void
++ login(email: String, password: String): boolean
++ updateProfile(): void
++ placeOrder(): Order
++ viewOrders(): List<Order>

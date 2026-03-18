@@ -1,0 +1,45 @@
+title:
+Online Shopping System
+
+Description*
+
+Design a UML Class Diagram for an Online Shopping System that allows customers to browse products, place orders, and make payments.
+
+Requirements*
+Include main classes such as:
+
+Customer
+
+Product
+
+Order
+
+OrderItem
+
+Payment
+
+ShoppingCart
+
+Define attributes and basic methods for each class.
+
+Example:
+
+Customer → customerId, name, email
+
+Product → productId, name, price, stock
+
+Show proper relationships:
+
+Customer places Order (Association)
+
+Order contains multiple OrderItems (Composition)
+
+OrderItem refers to Product (Association)
+
+Customer owns ShoppingCart (Aggregation)
+
+Order has Payment (Association)
+
+Use correct multiplicities (1..*, 0..1 etc.)
+
+Apply inheritance if needed (e.g., OnlinePayment & CashPayment from Payment).

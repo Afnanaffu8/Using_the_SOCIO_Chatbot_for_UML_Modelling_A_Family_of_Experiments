@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}My Tasks{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="fas fa-clipboard-list me-2"></i>My Tasks</h2>
+        <p class="text-muted">View and complete your assigned tasks</p>
+    </div>
+</div>
+
+<div class="row">
+    {% if assignments %}
+        {% for assignment in assignments %}
+        <div class="col-md-6 mb-4">
+            <div class="card task-card {{ assignment.task.tool_type }} h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title">{{ assignment.task.title }}</h5>
+                        {% if assignment.task.tool_type == 'chatbot' %}
+                        <span class="badge bg-info"><i class="fas fa-robot me-1"></i>Chatbot</span>
+                        {% else %}
+                        <span class="badge bg-success"><i class="fas fa-draw-polygon me-1"></i>Graphical</span>
+                        {% endif %}
+                    </div>
+                    
+                    <p class="card-text text-muted">{{ assignment.task.description }}</p>
+                    
+                    <div class="mb-3">
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <small class="text-muted">Difficulty</small><br>
+                                {% if assignment.task.difficulty == 'easy' %}
+                                <span class="badge bg-success">Easy</span>
+                                {% elif assignment.task.difficulty == 'medium' %}
+                                <span class="badge bg-warning">Medium</span>
+                                {% else %}
+                                <span class="badge bg-danger">Hard</span>
+                                {% endif %}
+                            </div>
+                            <div class="col-4">
+                                <small class="text-muted">Time Limit</small><br>
+                                <strong>{{ assignment.task.time_limit }} min</strong>
+                            </div>
+                            <div class="col-4">
+                                <small class="text-muted">Status</small><br>
+                                {% if assignment.status == 'completed' %}
+                                <span class="badge bg-success">Completed</span>
+                                {% elif assignment.status == 'in_progress' %}
+                                <span class="badge bg-warning">In Progress</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Pending</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        {% if assignment.status == 'completed' %}
+                        <a href="{% url 'submissions:detail' assignment.submission.pk %}" class="btn btn-success">
+                            <i class="fas fa-check-circle me-2"></i>View Submission
+                        </a>
+                        {% else %}
+                        <a href="{% url 'tasks:task_detail' assignment.task.pk %}" class="btn btn-primary">
+                            <i class="fas fa-play me-2"></i>
+                            {% if assignment.status == 'in_progress' %}Continue Task{% else %}Start Task{% endif %}
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-footer text-muted small">
+                    Assigned: {{ assignment.assigned_at|date:"M d, Y" }}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+                <h4>No Tasks Assigned</h4>
+                <p class="text-muted">You don't have any tasks assigned yet. Check back later!</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

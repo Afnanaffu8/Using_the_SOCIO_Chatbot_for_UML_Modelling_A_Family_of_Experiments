@@ -1,0 +1,11 @@
+django==5.0
+mysqlclient
+google-genai
+pillow
+django-crispy-forms
+crispy-bootstrap5
+pandas
+matplotlib
+seaborn
+scipy
+django-widget-tweaks

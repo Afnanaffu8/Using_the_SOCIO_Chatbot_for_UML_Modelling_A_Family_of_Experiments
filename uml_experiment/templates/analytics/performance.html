@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load analytics_filters %}
+
+{% block title %}Performance Metrics{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="fas fa-chart-line me-2"></i>Performance Metrics</h2>
+        <p class="text-muted">Detailed performance analysis by tool type</p>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="fas fa-robot me-2"></i>Chatbot Tool Performance</h5>
+            </div>
+            <div class="card-body">
+                {% if chatbot_data %}
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Participant</th>
+                                <th>Task</th>
+                                <th>Time (s)</th>
+                                <th>Classes</th>
+                                <th>Relations</th>
+                                <th>Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in chatbot_data %}
+                            <tr>
+                                <td>{{ data.participant }}</td>
+                                <td>{{ data.task }}</td>
+                                <td>{{ data.time_taken }}</td>
+                                <td>{{ data.class_count }}</td>
+                                <td>{{ data.relationship_count }}</td>
+                                <td>
+                                    <span class="badge bg-primary">
+                                        {{ data.completeness_score|floatformat:1 }}%
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="text-center mt-3">
+                    <p class="mb-0"><strong>Total Submissions:</strong> {{ chatbot_data|length }}</p>
+                </div>
+                {% else %}
+                <p class="text-muted text-center py-4">No chatbot submissions yet</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-draw-polygon me-2"></i>Graphical Tool Performance</h5>
+            </div>
+            <div class="card-body">
+                {% if graphical_data %}
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Participant</th>
+                                <th>Task</th>
+                                <th>Time (s)</th>
+                                <th>Classes</th>
+                                <th>Relations</th>
+                                <th>Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in graphical_data %}
+                            <tr>
+                                <td>{{ data.participant }}</td>
+                                <td>{{ data.task }}</td>
+                                <td>{{ data.time_taken }}</td>
+                                <td>{{ data.class_count }}</td>
+                                <td>{{ data.relationship_count }}</td>
+                                <td>
+                                    <span class="badge bg-success">
+                                        {{ data.completeness_score|floatformat:1 }}%
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="text-center mt-3">
+                    <p class="mb-0"><strong>Total Submissions:</strong> {{ graphical_data|length }}</p>
+                </div>
+                {% else %}
+                <p class="text-muted text-center py-4">No graphical submissions yet</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

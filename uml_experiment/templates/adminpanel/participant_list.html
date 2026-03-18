@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Participants{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2><i class="fas fa-users me-2"></i>Manage Participants</h2>
+                <p class="text-muted">View and manage all experiment participants</p>
+            </div>
+            <a href="{% url 'adminpanel:add_participant' %}" class="btn btn-primary">
+                <i class="fas fa-user-plus me-2"></i>Add New Participant
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                {% if participants %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Age</th>
+                                <th>Education</th>
+                                <th>UML Experience</th>
+                                <th>Tasks</th>
+                                <th>Completed</th>
+                                <th>Joined</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for participant in participants %}
+                            <tr>
+                                <td><span class="badge bg-secondary">{{ participant.participant_id }}</span></td>
+                                <td><strong>{{ participant.username }}</strong></td>
+                                <td>{{ participant.email }}</td>
+                                <td>{{ participant.age|default:"—" }}</td>
+                                <td>{{ participant.education_level|default:"—" }}</td>
+                                <td>
+                                    {% if participant.uml_experience == 'Beginner' %}
+                                    <span class="badge bg-info">Beginner</span>
+                                    {% elif participant.uml_experience == 'Intermediate' %}
+                                    <span class="badge bg-warning">Intermediate</span>
+                                    {% elif participant.uml_experience == 'Advanced' %}
+                                    <span class="badge bg-success">Advanced</span>
+                                    {% else %}
+                                    —
+                                    {% endif %}
+                                </td>
+                                <td>{{ participant.total_tasks }}</td>
+                                <td>
+                                    <span class="badge bg-success">{{ participant.completed_tasks }}</span>
+                                </td>
+                                <td>{{ participant.created_at|date:"M d, Y" }}</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{% url 'adminpanel:edit_participant' participant.pk %}" 
+                                           class="btn btn-outline-primary" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{% url 'adminpanel:delete_participant' participant.pk %}" 
+                                           class="btn btn-outline-danger" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-users fa-4x text-muted mb-3"></i>
+                    <h4>No Participants Yet</h4>
+                    <p class="text-muted">Add participants to start the experiment</p>
+                    <a href="{% url 'adminpanel:add_participant' %}" class="btn btn-primary">
+                        <i class="fas fa-user-plus me-2"></i>Add First Participant
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,301 @@
+{% extends 'base.html' %}
+
+{% block title %}Chatbot Interface - {{ assignment.task.title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .chat-interface {
+        height: calc(100vh - 200px);
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .diagram-preview {
+        border: 2px solid #dee2e6;
+        border-radius: 0.5rem;
+        background: white;
+        padding: 1rem;
+        min-height: 400px;
+        max-height: 500px;
+        overflow: auto;
+    }
+    
+    .diagram-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+    
+    .uml-class {
+        border: 2px solid #333;
+        background: white;
+        min-width: 200px;
+        max-width: 250px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .class-name {
+        background: #667eea;
+        color: white;
+        padding: 0.5rem;
+        font-weight: bold;
+        text-align: center;
+        border-bottom: 2px solid #333;
+    }
+    
+    .class-attributes, .class-methods {
+        padding: 0.5rem;
+        border-bottom: 2px solid #333;
+    }
+    
+    .class-attributes:last-child, .class-methods:last-child {
+        border-bottom: none;
+    }
+    
+    .attribute-item, .method-item {
+        padding: 0.25rem 0.5rem;
+        font-family: monospace;
+    }
+</style>
+{% endblock %}
+
+{% block main_class %}container-fluid my-4{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2><i class="fas fa-robot me-2"></i>{{ assignment.task.title }}</h2>
+                <p class="text-muted">{{ assignment.task.description }}</p>
+            </div>
+            <div>
+                <button class="btn btn-success" onclick="submitDiagram()">
+                    <i class="fas fa-check me-2"></i>Submit Diagram
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Chat Section -->
+    <div class="col-md-6">
+        <div class="card chat-interface">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-comments me-2"></i>Chat with AI Assistant</h5>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                {% for message in messages %}
+                <div class="message {{ message.sender }}">
+                    <div class="message-bubble">
+                        {{ message.message|linebreaks }}
+                    </div>
+                </div>
+                {% empty %}
+                <div class="message bot">
+                    <div class="message-bubble">
+                        Hello! I'm your UML diagram assistant. I'll help you create a class diagram for this task. 
+                        Tell me what you'd like to add, or ask me for suggestions to get started!
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="chat-input-area">
+                <form id="chatForm" onsubmit="sendMessage(event)">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="messageInput" 
+                               placeholder="Type your message..." required>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Diagram Preview -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-diagram-project me-2"></i>Diagram Preview</h5>
+            </div>
+            <div class="card-body">
+                <div class="diagram-preview" id="diagramPreview">
+                    <div class="text-center text-muted py-5">
+                        <i class="fas fa-diagram-project fa-3x mb-3"></i>
+                        <p>Your diagram will appear here as you build it with the chatbot</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Task Requirements -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="fas fa-list-check me-2"></i>Requirements</h6>
+            </div>
+            <div class="card-body">
+                {{ assignment.task.requirements|linebreaks }}
+                <hr>
+                <div class="row text-center">
+                    <div class="col-6">
+                        <strong>Expected Classes:</strong> {{ assignment.task.expected_classes }}
+                    </div>
+                    <div class="col-6">
+                        <strong>Expected Relationships:</strong> {{ assignment.task.expected_relationships }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// CSRF Token Setup for AJAX
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+const csrftoken = getCookie('csrftoken');
+
+const sessionId = '{{ session.session_id }}';
+const assignmentId = {{ assignment.id }};
+let currentDiagram = {{ session.diagram_data|default:'null'|safe }};
+
+// Ensure currentDiagram is always a proper object
+if (!currentDiagram || typeof currentDiagram !== 'object') {
+    currentDiagram = {"classes": [], "relationships": []};
+}
+if (!currentDiagram.classes) currentDiagram.classes = [];
+if (!currentDiagram.relationships) currentDiagram.relationships = [];
+
+function sendMessage(event) {
+    event.preventDefault();
+    
+    const input = document.getElementById('messageInput');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    // Add user message to chat
+    addMessageToChat('user', message);
+    input.value = '';
+    
+    // Send to server
+    fetch('{% url "chatbot:send_message" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify({
+            session_id: sessionId,
+            message: message
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            addMessageToChat('bot', data.bot_message);
+            if (data.diagram_data) {
+                currentDiagram = data.diagram_data;
+                renderDiagram(data.diagram_data);
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        addMessageToChat('bot', 'Sorry, I encountered an error. Please try again.');
+    });
+}
+
+function addMessageToChat(sender, message) {
+    const chatMessages = document.getElementById('chatMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${sender}`;
+    messageDiv.innerHTML = `<div class="message-bubble">${message.replace(/\n/g, '<br>')}</div>`;
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function renderDiagram(diagramData) {
+    const preview = document.getElementById('diagramPreview');
+    
+    if (!diagramData || !diagramData.classes || diagramData.classes.length === 0) {
+        preview.innerHTML = `
+            <div class="text-center text-muted py-5">
+                <i class="fas fa-diagram-project fa-3x mb-3"></i>
+                <p>Your diagram will appear here as you build it with the chatbot</p>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = '<div class="diagram-container">';
+    
+    diagramData.classes.forEach(cls => {
+        html += `
+            <div class="uml-class">
+                <div class="class-name">${cls.name}</div>
+                <div class="class-attributes">
+                    ${cls.attributes && cls.attributes.length > 0 ? 
+                        cls.attributes.map(attr => `<div class="attribute-item">- ${attr}</div>`).join('') :
+                        '<div class="attribute-item text-muted">No attributes</div>'}
+                </div>
+                <div class="class-methods">
+                    ${cls.methods && cls.methods.length > 0 ? 
+                        cls.methods.map(method => `<div class="method-item">+ ${method}</div>`).join('') :
+                        '<div class="method-item text-muted">No methods</div>'}
+                </div>
+            </div>
+        `;
+    });
+    
+    html += '</div>';
+    
+    // Add relationships
+    if (diagramData.relationships && diagramData.relationships.length > 0) {
+        html += '<div class="mt-3"><strong>Relationships:</strong><ul>';
+        diagramData.relationships.forEach(rel => {
+            html += `<li>${rel.from} ${rel.type} ${rel.to} ${rel.label ? `(${rel.label})` : ''}</li>`;
+        });
+        html += '</ul></div>';
+    }
+    
+    preview.innerHTML = html;
+}
+
+function submitDiagram() {
+    if (!currentDiagram || !currentDiagram.classes || currentDiagram.classes.length === 0) {
+        alert('Please create a diagram before submitting.');
+        return;
+    }
+    
+    if (confirm('Are you sure you want to submit this diagram?')) {
+        window.location.href = `/submissions/submit/${assignmentId}/`;
+    }
+}
+
+// Initial render
+renderDiagram(currentDiagram);
+
+// Auto-scroll chat to bottom
+document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+</script>
+{% endblock %}
